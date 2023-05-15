@@ -1,0 +1,28 @@
+#include<stdio.h>
+#include<conio.h>
+#include<math.h>
+#include<stdlib.h>
+
+int main()
+{
+    int queue[100],n,head,i,j,k,seek=0,max,diff,temp,queue1[100],queue2[100],temp1=0,temp2=0;
+    float avg;
+    printf("*** FCFS Disk Scheduling Algorithm ***\n\n");
+    printf("Enter the number of requests: ");
+    scanf("%d",&n);
+    printf("Enter the initial head position: ");
+    scanf("%d",&head);
+    printf("Enter the request queue: ");
+    for(i=0;i<n;i++)
+        scanf("%d",&queue[i]);
+    for(i=0;i<n;i++)
+    {
+        diff=abs(head-queue[i]);
+        seek+=diff;
+        head=queue[i];
+    }
+    avg=seek/(float)n;
+    printf("\nTotal head movement: %d",seek);
+    printf("\nAverage head movement: %0.2f",avg);
+    return 0;
+}
