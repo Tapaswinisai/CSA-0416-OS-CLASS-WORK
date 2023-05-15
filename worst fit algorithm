@@ -1,0 +1,44 @@
+#include <stdio.h>
+
+#define MAX_PARTITIONS 6
+#define MAX_PROCESSES 5
+
+int main()
+{
+    int partitions[MAX_PARTITIONS] = {300, 600, 350, 200, 750, 125};
+    int processes[MAX_PROCESSES] = {115, 500, 358, 200, 375};
+    int allocation[MAX_PROCESSES] = {-1, -1, -1, -1, -1};
+    int i, j, index;
+    int temp;
+    int largest;
+
+    for (i = 0; i < MAX_PROCESSES; i++) {
+        largest = -1;
+        for (j = 0; j < MAX_PARTITIONS; j++) {
+            if (processes[i] <= partitions[j]) {
+                if (largest == -1) {
+                    largest = j;
+                } else if (partitions[j] > partitions[largest]) {
+                    largest = j;
+                }
+            }
+        }
+        if (largest != -1) {
+            allocation[i] = largest;
+            partitions[largest] -= processes[i];
+        }
+    }
+
+    printf("\nProcess No.\tProcess Size\tPartition No.\n");
+    for (i = 0; i < MAX_PROCESSES; i++) {
+        printf(" %d\t\t%d\t\t", i+1, processes[i]);
+        if (allocation[i] != -1) {
+            printf("%d", allocation[i]+1);
+        } else {
+            printf("Not Allocated");
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
