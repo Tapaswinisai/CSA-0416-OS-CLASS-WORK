@@ -1,0 +1,81 @@
+#include<stdio.h>
+#include<stdbool.h>
+
+#define MAX_FRAMES 3
+#define MAX_REFERENCES 20
+
+int main() {
+    int page_frames[MAX_FRAMES], reference_string[MAX_REFERENCES];
+    bool page_fault = true;
+    int page_fault_count = 0, page_hit_count = 0, frame_count = 0, least_recently_used = 0;
+
+    // initialize page frames to -1 to indicate that they are empty
+    for(int i = 0; i < MAX_FRAMES; i++) {
+        page_frames[i] = -1;
+    }
+
+    // read the page reference string
+    printf("Enter the page reference sequence: ");
+    for(int i = 0; i < MAX_REFERENCES; i++) {
+        scanf("%d", &reference_string[i]);
+    }
+
+    // process the page reference string
+    for(int i = 0; i < MAX_REFERENCES; i++) {
+        int current_page = reference_string[i];
+        page_fault = true;
+
+        // check if the current page is already in one of the frames
+        for(int j = 0; j < MAX_FRAMES; j++) {
+            if(page_frames[j] == current_page) {
+                page_fault = false;
+                page_hit_count++;
+                break;
+            }
+        }
+
+        // if the current page is not in any of the frames, replace the least recently used page
+        if(page_fault) {
+            page_fault_count++;
+            if(frame_count < MAX_FRAMES) {
+                // there is an empty frame available
+                page_frames[frame_count++] = current_page;
+            }
+            else {
+                // replace the least recently used page
+                int min_index = i;
+                for(int j = 0; j < MAX_FRAMES; j++) {
+                    int k;
+                    for(k = i-1; k >= 0; k--) {
+                        if(page_frames[j] == reference_string[k]) {
+                            break;
+                        }
+                    }
+                    if(k < min_index) {
+                        min_index = k;
+                        least_recently_used = j;
+                    }
+                }
+                page_frames[least_recently_used] = current_page;
+            }
+        }
+
+        // print the current state of the page frames
+        printf("%d: ", current_page);
+        for(int j = 0; j < MAX_FRAMES; j++) {
+            if(page_frames[j] == -1) {
+                printf("  ");
+            }
+            else {
+                printf("%d ", page_frames[j]);
+            }
+        }
+        printf("\n");
+    }
+
+    // print the number of page faults and page hits
+    printf("Number of page faults: %d\n", page_fault_count);
+    printf("Number of page hits: %d\n", page_hit_count);
+
+    return 0;
+}
