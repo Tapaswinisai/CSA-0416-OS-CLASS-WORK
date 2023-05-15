@@ -1,0 +1,43 @@
+#include <stdio.h>
+
+#define MAX_PARTITIONS 6
+#define MAX_PROCESSES 5
+
+int main() {
+    int memory[MAX_PARTITIONS] = {300, 600, 350, 200, 750, 125};
+    int process_size[MAX_PROCESSES] = {115, 500, 358, 200, 375};
+    int allocation[MAX_PROCESSES] = {-1, -1, -1, -1, -1};
+    int i, j, best_partition;
+
+    // Iterate over each process
+    for (i = 0; i < MAX_PROCESSES; i++) {
+        // Find the best-fit partition for the current process
+        best_partition = -1;
+        for (j = 0; j < MAX_PARTITIONS; j++) {
+            if (memory[j] >= process_size[i]) {
+                if (best_partition == -1 || memory[j] < memory[best_partition]) {
+                    best_partition = j;
+                }
+            }
+        }
+
+        // Allocate the current process to the best-fit partition
+        if (best_partition != -1) {
+            allocation[i] = best_partition;
+            memory[best_partition] -= process_size[i];
+        }
+    }
+
+    // Print the allocation of each process
+    printf("Process\tSize\tPartition\n");
+    for (i = 0; i < MAX_PROCESSES; i++) {
+        printf("%d\t%d\t", i+1, process_size[i]);
+        if (allocation[i] != -1) {
+            printf("%d\n", allocation[i]+1);
+        } else {
+            printf("Not allocated\n");
+        }
+    }
+
+    return 0;
+}
