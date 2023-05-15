@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+// shared memory variable
+int sharedData = 5;
+
+// semaphore for synchronization
+sem_t sem;
+
+// thread functions
+void* doubleThread(void* arg) {
+    int data;
+    // wait for the semaphore to be available
+    sem_wait(&sem);
+    // read from the shared memory
+    data = sharedData;
+    // double the data
+    data *= 2;
+    // print the result
+    printf("Thread 1: %d * 2 = %d\n", sharedData, data);
+    // update the shared memory
+    sharedData = data;
+    // release the semaphore
+    sem_post(&sem);
+    return NULL;
+}
+
+void* fiveThread(void* arg) {
+    int data;
+    // wait for the semaphore to be available
+    sem_wait(&sem);
+    // read from the shared memory
+    data = sharedData;
+    // multiply the data by 5
+    data *= 5;
+    // print the result
+    printf("Thread 2: %d * 5 = %d\n", sharedData, data);
+    // update the shared memory
+    sharedData = data;
+    // release the semaphore
+    sem_post(&sem);
+    return NULL;
+}
+
+int main() {
+    // initialize the semaphore
+    sem_init(&sem, 0, 1);
+    // create the threads
+    pthread_t thread1, thread2;
+    pthread_create(&thread1, NULL, doubleThread, NULL);
+    pthread_create(&thread2, NULL, fiveThread, NULL);
+    // wait for the threads to finish
+    pthread_join(thread1, NULL);
+    pthread_join(thread2, NULL);
+    // destroy the semaphore
+    sem_destroy(&sem);
+    return 0;
+}
