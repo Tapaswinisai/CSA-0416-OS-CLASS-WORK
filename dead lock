@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define P 3     // number of processes
+#define R 3     // number of resource types
+
+int main()
+{
+    int max[P][R] = {{3, 6, 8}, {4, 3, 3}, {3, 4, 4}};    // max resource matrix
+    int allocation[P][R] = {{3, 3, 3}, {2, 0, 3}, {1, 2, 4}};  // allocation matrix
+    int available[R] = {1, 2, 0};   // number of available resources
+    bool finish[P] = {false};   // array to keep track of finished processes
+    int need[P][R]; // need matrix
+    int work[R];    // work array for Banker's algorithm
+
+    // Calculate the need matrix
+    for (int i = 0; i < P; i++) {
+        for (int j = 0; j < R; j++) {
+            need[i][j] = max[i][j] - allocation[i][j];
+        }
+    }
+
+    // Initialize work array
+    for (int j = 0; j < R; j++) {
+        work[j] = available[j];
+    }
+
+    // Apply Banker's algorithm
+    bool found = true;
+    while (found) {
+        found = false;
+        for (int i = 0; i < P; i++) {
+            if (!finish[i]) {
+                bool safe = true;
+                for (int j = 0; j < R; j++) {
+                    if (need[i][j] > work[j]) {
+                        safe = false;
+                        break;
+                    }
+                }
+                if (safe) {
+                    found = true;
+                    finish[i] = true;
+                    for (int j = 0; j < R; j++) {
+                        work[j] += allocation[i][j];
+                    }
+                }
+            }
+        }
+    }
+
+    // Check if the system is in a deadlock state
+    bool deadlock = true;
+    for (int i = 0; i < P; i++) {
+        if (!finish[i]) {
+            deadlock = false;
+            break;
+        }
+    }
+
+    // Print the results
+    if (deadlock) {
+        printf("The system is in a deadlock state.\n");
+        printf("The deadlocked processes are: ");
+        for (int i = 0; i < P; i++) {
+            if (!finish[i]) {
+                printf("P%d ", i + 1);
+            }
+        }
+        printf("\n");
+    } else {
+        printf("The system is not in a deadlock state.\n");
+    }
+
+    return 0;
+}
