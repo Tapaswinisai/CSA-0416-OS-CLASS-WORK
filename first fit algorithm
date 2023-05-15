@@ -1,0 +1,41 @@
+#include <stdio.h>
+
+int main() {
+    int mem[] = {300, 600, 350, 200, 750, 125}; // Memory partitions in KB
+    int n = sizeof(mem) / sizeof(mem[0]); // Number of memory partitions
+    int pro[] = {115, 500, 358, 200, 375}; // Process sizes in KB
+    int m = sizeof(pro) / sizeof(pro[0]); // Number of processes
+    int alloc[m]; // Array to store the allocation status of each process
+
+    // Initialize the allocation status of all processes to -1
+    for (int i = 0; i < m; i++) {
+        alloc[i] = -1;
+    }
+
+    // Allocate memory to each process using first-fit algorithm
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (pro[i] <= mem[j]) {
+                alloc[i] = j;
+                mem[j] -= pro[i];
+                break;
+            }
+        }
+    }
+
+    // Print the allocation status of each process and the remaining memory in each partition
+    printf("Process\tSize (KB)\tPartition\n");
+    for (int i = 0; i < m; i++) {
+        if (alloc[i] != -1) {
+            printf("%d\t\t%d\t\t%d\n", i+1, pro[i], alloc[i]+1);
+        } else {
+            printf("%d\t\t%d\t\tNot allocated\n", i+1, pro[i]);
+        }
+    }
+    printf("\nRemaining Memory in Each Partition (KB):\n");
+    for (int i = 0; i < n; i++) {
+        printf("Partition %d: %d\n", i+1, mem[i]);
+    }
+
+    return 0;
+}
