@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BLOCK_SIZE 8192       
+#define POINTER_SIZE 4 
+#define DIRECT_BLOCKS 12 
+#define POINTERS_PER_BLOCK (BLOCK_SIZE / POINTER_SIZE)
+
+unsigned long long maxFileSize()
+{
+     
+    unsigned long long maxDirectBlocks = DIRECT_BLOCKS;
+    unsigned long long maxSingleIndirectBlocks = POINTERS_PER_BLOCK;
+    unsigned long long maxDoubleIndirectBlocks = POINTERS_PER_BLOCK * POINTERS_PER_BLOCK;
+    unsigned long long maxTripleIndirectBlocks = POINTERS_PER_BLOCK * POINTERS_PER_BLOCK * POINTERS_PER_BLOCK;
+
+ 
+    unsigned long long maxFileBytes =
+        (maxDirectBlocks +                                      // Direct blocks
+         maxSingleIndirectBlocks * BLOCK_SIZE +                 // Single indirect blocks
+         maxDoubleIndirectBlocks * BLOCK_SIZE * BLOCK_SIZE +    // Double indirect blocks
+         maxTripleIndirectBlocks * BLOCK_SIZE * BLOCK_SIZE * BLOCK_SIZE);
+
+    return maxFileBytes;
+}
+
+int main()
+{
+    unsigned long long maxSize = maxFileSize();
+    printf("Maximum size of a file in this file system: %llu bytes\n", maxSize);
+    return 0;
+}
