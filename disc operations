@@ -1,0 +1,38 @@
+ #include <stdio.h>
+
+ int contiguousAllocation(int currentBlocks, int blockPosition) {
+    int newBlocks = currentBlocks + 1;
+    int operations = newBlocks - currentBlocks;
+    
+     if (blockPosition > 0 && blockPosition < currentBlocks)
+        operations += currentBlocks - blockPosition;
+    
+    return operations;
+}
+
+ int linkedAllocation(int currentBlocks) {
+    return 1;  
+}
+
+ int indexedAllocation(int currentBlocks) {
+    if (currentBlocks < 100)
+        return 2; 
+    else
+        return -1; 
+}
+int main() {
+    int currentBlocks = 100;
+    int blockPosition;
+    
+    printf("Enter the block position (0 for beginning, 1 for middle, 2 for end): ");
+    scanf("%d", &blockPosition);
+    
+    int contiguousIO = contiguousAllocation(currentBlocks, blockPosition);
+    int linkedIO = linkedAllocation(currentBlocks);
+    int indexedIO = indexedAllocation(currentBlocks);
+    
+    printf("Contiguous Allocation: %d I/O operations\n", contiguousIO);
+    printf("Linked Allocation: %d I/O operations\n", linkedIO);
+    printf("Indexed Allocation: %d I/O operations\n", indexedIO);
+    return 0;
+}
