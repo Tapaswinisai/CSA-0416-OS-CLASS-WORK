@@ -1,0 +1,102 @@
+ #include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PARTITIONS 10
+#define MAX_PROCESSES 10
+
+typedef struct {
+    int partition_id;
+    int size;
+} Partition;
+
+typedef struct {
+    int process_id;
+    int size;
+    int allocated_partition_id;
+} Process;
+
+void worstFit(Partition partitions[], int num_partitions, Process processes[], int num_processes) {
+    for (int i = 0; i < num_processes; i++) {
+        int process_size = processes[i].size;
+        int allocated_partition_id = -1;
+        int max_fragmentation = -1;
+
+        for (int j = 0; j < num_partitions; j++) {
+            int partition_size = partitions[j].size;
+            if (partition_size >= process_size && partition_size - process_size > max_fragmentation) {
+                max_fragmentation = partition_size - process_size;
+                allocated_partition_id = partitions[j].partition_id;
+            }
+        }
+
+        if (allocated_partition_id != -1) {
+            partitions[allocated_partition_id].size -= process_size;
+            processes[i].allocated_partition_id = allocated_partition_id;
+        }
+    }
+}
+
+int main() {
+    Partition partitions[MAX_PARTITIONS];
+    partitions[0].partition_id = 0;
+    partitions[0].size = 40;
+    partitions[1].partition_id = 1;
+    partitions[1].size = 10;
+    partitions[2].partition_id = 2;
+    partitions[2].size = 30;
+    partitions[3].partition_id = 3;
+    partitions[3].size = 60;
+
+    Process processes[MAX_PROCESSES];
+    processes[0].process_id = 0;
+    processes[0].size = 100;
+    processes[0].allocated_partition_id = -1;
+    processes[1].process_id = 1;
+    processes[1].size = 50;
+    processes[1].allocated_partition_id = -1;
+    processes[2].process_id = 2;
+    processes[2].size = 30;
+    processes[2].allocated_partition_id = -1;
+    processes[3].process_id = 3;
+    processes[3].size = 120;
+    processes[3].allocated_partition_id = -1;
+    processes[4].process_id = 4;
+    processes[4].size = 35;
+    processes[4].allocated_partition_id = -1;
+
+    int num_partitions = 4;
+    int num_processes = 5;
+
+    printf("Memory Partitions:\n");
+    printf("------------------\n");
+    for (int i = 0; i < num_partitions; i++) {
+        printf("Partition ID: %d\tSize: %d KB\n", partitions[i].partition_id, partitions[i].size);
+    }
+    printf("\n");
+
+    printf("Processes:\n");
+    printf("----------\n");
+    for (int i = 0; i < num_processes; i++) {
+        printf("Process ID: %d\tSize: %d KB\n", processes[i].process_id, processes[i].size);
+    }
+    printf("\n");
+
+    worstFit(partitions, num_partitions, processes, num_processes);
+
+    printf("Memory Allocation:\n");
+    printf("------------------\n");
+    for (int i = 0; i < num_processes; i++) {
+        int process_id = processes[i].process_id;
+        int process_size = processes[i].size;
+        int partition_id = processes[i].allocated_partition_id;
+
+        if (partition_id != -1) {
+            printf("Process ID: %d\tSize: %d KB\tPartition ID: %d\n", process_id, process_size, partition_id);
+        } else {
+            printf("Process ID: %d\tSize: %d KB\tNot allocated\n", process_id, process_size);
+        }
+    }
+    printf("\n");
+
+    return 0;
+}
