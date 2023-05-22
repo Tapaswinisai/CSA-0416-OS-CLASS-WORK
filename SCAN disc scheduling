@@ -1,0 +1,54 @@
+ #include <stdio.h>
+#include <stdlib.h>
+
+int abs_diff(int a, int b) {
+    return (a > b) ? (a - b) : (b - a);
+}
+
+int cmpfunc(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+void scan(int tracks[], int n, int start) {
+    int head_movement = 0;
+    int i, j;
+    int left[n], right[n];
+    int left_count = 0, right_count = 0;
+
+     for (i = 0; i < n; i++) {
+        if (tracks[i] < start) {
+            left[left_count++] = tracks[i];
+        } else {
+            right[right_count++] = tracks[i];
+        }
+    }
+
+     qsort(left, left_count, sizeof(int), cmpfunc);
+    qsort(right, right_count, sizeof(int), cmpfunc);
+
+     int current = start;
+    head_movement += abs_diff(current, 0);
+    current = 0;
+
+     for (i = 0; i < right_count; i++) {
+        head_movement += abs_diff(current, right[i]);
+        current = right[i];
+    }
+
+     for (i = left_count - 1; i >= 0; i--) {
+        head_movement += abs_diff(current, left[i]);
+        current = left[i];
+    }
+
+    printf("Average head movement: %.2f\n", (float)head_movement / n);
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18, 90, 150, 160, 184};
+    int n = sizeof(tracks) / sizeof(tracks[0]);
+    int start = 50;  
+
+    scan(tracks, n, start);
+
+    return 0;
+}
