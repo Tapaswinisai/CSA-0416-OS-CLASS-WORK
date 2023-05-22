@@ -1,0 +1,59 @@
+ #include <stdio.h>
+#include <stdlib.h>
+
+int abs_diff(int a, int b) {
+    return (a > b) ? (a - b) : (b - a);
+}
+
+int cmpfunc(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+void cscan(int tracks[], int n, int start) {
+    int head_movement = 0;
+    int i, j, current;
+    int lower[n], upper[n];
+    int lower_count = 0, upper_count = 0;
+
+     for (i = 0; i < n; i++) {
+        if (tracks[i] < start) {
+            lower[lower_count++] = tracks[i];
+        } else {
+            upper[upper_count++] = tracks[i];
+        }
+    }
+
+     qsort(lower, lower_count, sizeof(int), cmpfunc);
+    qsort(upper, upper_count, sizeof(int), cmpfunc);
+
+     current = start;
+    for (i = 0; i < 2; i++) {
+        if (i == 0) {  
+            for (j = lower_count - 1; j >= 0; j--) {
+                head_movement += abs_diff(current, lower[j]);
+                current = lower[j];
+            }
+            head_movement += abs_diff(current, 0);
+            current = 0;
+        } else {  
+            for (j = 0; j < upper_count; j++) {
+                head_movement += abs_diff(current, upper[j]);
+                current = upper[j];
+            }
+            head_movement += abs_diff(current, 99);
+            current = 99;
+        }
+    }
+
+    printf("Average head movement: %.2f\n", (float)head_movement / n);
+}
+
+int main() {
+    int tracks[] = {55, 58, 60, 70, 18};
+    int n = sizeof(tracks) / sizeof(tracks[0]);
+    int start = 50; 
+
+    cscan(tracks, n, start);
+
+    return 0;
+}
